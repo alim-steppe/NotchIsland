@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<defs>
+<clipPath id="sq"><rect x="100" y="100" width="824" height="824" rx="186" ry="186"/></clipPath>
+<filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-opacity="0.28"/></filter>
+
+</defs>
+<g filter="url(#sh)"><g clip-path="url(#sq)">
+
+<rect x="100" y="100" width="824" height="824" fill="#F4F1EA"/>
+<rect x="372" y="60" width="280" height="118" rx="39" fill="#111"/>
+<rect x="250" y="704" width="524" height="64" rx="32" fill="#111"/>
+<circle cx="170" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="218" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="266" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="314" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="362" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="410" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="458" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="506" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="554" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="602" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="650" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="698" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="746" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="794" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="842" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="890" cy="806" r="7" fill="#1C1C1E" opacity="0.55"/><circle cx="194" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="242" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="290" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="338" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="386" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="434" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="482" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="530" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="578" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="626" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="674" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="722" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="770" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="818" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="866" cy="846" r="7" fill="#1C1C1E" opacity="0.35"/><circle cx="170" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="218" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="266" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="314" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="362" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="410" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="458" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="506" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="554" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="602" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="650" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="698" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="746" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="794" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="842" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/><circle cx="890" cy="886" r="7" fill="#1C1C1E" opacity="0.2"/>
+<polygon points="474.0,708.0 522.0,708.0 519.3,670.0 474.7,670.0" fill="#111"/>
+<polygon points="474.7,665.0 519.3,665.0 518.5,627.0 477.2,627.0" fill="#111"/>
+<polygon points="477.2,622.0 518.5,622.0 521.0,584.0 483.0,584.0" fill="#111"/>
+<polygon points="483.0,579.0 521.0,579.0 527.2,541.0 492.5,541.0" fill="#111"/>
+<polygon points="492.5,536.0 527.2,536.0 536.7,498.0 505.3,498.0" fill="#111"/>
+<polygon points="505.3,493.0 536.7,493.0 548.0,455.0 520.0,455.0" fill="#111"/>
+<polygon points="534.0,446.0 448.9,462.7 348.2,406.5" fill="#111"/>
+<polygon points="534.0,446.0 454.2,399.1 407.8,284.5" fill="#2B2B2B"/>
+<polygon points="534.0,446.0 576.4,388.3 554.9,297.5" fill="#111"/>
+<polygon points="534.0,446.0 621.8,416.7 691.0,314.2" fill="#2B2B2B"/>
+<polygon points="534.0,446.0 615.7,468.9 717.2,420.3" fill="#111"/>
+<circle cx="534.0" cy="452.0" r="16" fill="#2B2B2B"/>
+
+</g></g>
+</svg>
