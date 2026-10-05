@@ -10,16 +10,20 @@ struct IslandRootView: View {
 
     var body: some View {
         let expanded = model.expanded
+        let notch = model.notchSize
         let size = expanded
             ? IslandModel.expandedSize
-            : CGSize(width: model.collapsedWidth, height: model.notchSize.height)
-        let radius: CGFloat = expanded ? 26 : 10
-        let shape = UnevenRoundedRectangle(
-            topLeadingRadius: 0,
-            bottomLeadingRadius: radius,
-            bottomTrailingRadius: radius,
-            topTrailingRadius: 0,
-            style: .continuous
+            : CGSize(width: model.collapsedWidth, height: notch.height)
+        // Раскрытый островок: узкая «шейка» шириной с вырез в полосе меню-бара
+        // и широкое тело ниже меню-бара. В полосе меню-бара по бокам от выреза
+        // мы ничего не рисуем — поэтому меню приложений (Chrome и т.д.)
+        // больше не накладываются на островок.
+        let shape = IslandShape(
+            neckWidth: model.hasNotch ? notch.width : min(notch.width, size.width),
+            bodyWidth: size.width,
+            bodyTop: expanded ? notch.height : 0,
+            topRadius: expanded ? 18 : 0,
+            bottomRadius: expanded ? 26 : 10
         )
 
         ZStack(alignment: .top) {
@@ -42,6 +46,56 @@ struct IslandRootView: View {
         .animation(.spring(response: 0.42, dampingFraction: 0.8), value: expanded)
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: model.showWings)
         .environment(\.colorScheme, .dark)
+    }
+}
+
+/// Форма островка: «шейка» по центру сверху (под вырезом) + скруглённое тело.
+/// Все параметры анимируются, поэтому свёрнутый вид плавно перетекает в раскрытый.
+struct IslandShape: Shape {
+    var neckWidth: CGFloat
+    var bodyWidth: CGFloat
+    var bodyTop: CGFloat
+    var topRadius: CGFloat
+    var bottomRadius: CGFloat
+
+    var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>,
+                                       AnimatablePair<CGFloat, AnimatablePair<CGFloat, CGFloat>>> {
+        get {
+            AnimatablePair(AnimatablePair(neckWidth, bodyWidth),
+                           AnimatablePair(bodyTop, AnimatablePair(topRadius, bottomRadius)))
+        }
+        set {
+            neckWidth = newValue.first.first
+            bodyWidth = newValue.first.second
+            bodyTop = newValue.second.first
+            topRadius = newValue.second.second.first
+            bottomRadius = newValue.second.second.second
+        }
+    }
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let bw = min(bodyWidth, rect.width)
+        let body = CGRect(x: rect.midX - bw / 2, y: rect.minY + bodyTop,
+                          width: bw, height: max(rect.height - bodyTop, 1))
+        let maxR = min(body.width, body.height) / 2
+        path.addRoundedRect(
+            in: body,
+            cornerRadii: RectangleCornerRadii(
+                topLeading: min(topRadius, maxR),
+                bottomLeading: min(bottomRadius, maxR),
+                bottomTrailing: min(bottomRadius, maxR),
+                topTrailing: min(topRadius, maxR)
+            ),
+            style: .continuous
+        )
+        if bodyTop > 0.5 {
+            // Шейка заходит в тело, чтобы не было щели между ними.
+            let nw = min(neckWidth, bw)
+            path.addRect(CGRect(x: rect.midX - nw / 2, y: rect.minY,
+                                width: nw, height: bodyTop + topRadius + 1))
+        }
+        return path
     }
 }
 
@@ -122,31 +176,27 @@ struct ExpandedView: View {
     @EnvironmentObject var system: SystemMonitor
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Верхняя полоса лежит в зоне меню-бара: macOS перехватывает там клики,
-            // поэтому в ней только информация, без кнопок.
-            infoBar
-            HStack(alignment: .top, spacing: 0) {
-                sidebar
-                Rectangle()
-                    .fill(Color.white.opacity(0.08))
-                    .frame(width: 1)
-                    .padding(.vertical, 4)
-                Group {
-                    switch model.tab {
-                    case .calendar: CalendarTabView()
-                    case .music: MusicTabView()
-                    case .shelf: ShelfTabView()
-                    case .system: SystemTabView()
-                    }
+        HStack(alignment: .top, spacing: 0) {
+            sidebar
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(width: 1)
+                .padding(.vertical, 4)
+            Group {
+                switch model.tab {
+                case .calendar: CalendarTabView()
+                case .music: MusicTabView()
+                case .shelf: ShelfTabView()
+                case .system: SystemTabView()
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.leading, 16)
-                .padding(.trailing, 18)
             }
-            .padding(.top, 6)
-            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.leading, 16)
+            .padding(.trailing, 18)
         }
+        // Всё содержимое — ниже полосы меню-бара.
+        .padding(.top, model.notchSize.height + 14)
+        .padding(.bottom, 16)
         .foregroundStyle(Color.white)
     }
 
@@ -179,34 +229,25 @@ struct ExpandedView: View {
             }
 
             Spacer(minLength: 0)
-        }
-        .frame(width: 128)
-        .padding(.leading, 12)
-        .padding(.trailing, 8)
-    }
 
-    private var infoBar: some View {
-        HStack(spacing: 0) {
-            TimelineView(.periodic(from: .now, by: 20)) { ctx in
-                Text(ctx.date, format: .dateTime.weekday(.abbreviated).day().month(.abbreviated).hour().minute())
-            }
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(Color.white.opacity(0.7))
-            .lineLimit(1)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            Color.clear.frame(width: model.hasNotch ? model.notchSize.width : 12)
-
-            Group {
+            VStack(alignment: .leading, spacing: 4) {
+                TimelineView(.periodic(from: .now, by: 20)) { ctx in
+                    Text(ctx.date, format: .dateTime.weekday(.abbreviated).day().month(.abbreviated).hour().minute())
+                }
+                .font(.system(size: 11, weight: .medium))
+                .foregroundStyle(Color.white.opacity(0.6))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 if let level = system.battery {
                     BatteryView(level: level, charging: system.charging)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
+            .padding(.horizontal, 10)
+            .allowsHitTesting(false)
         }
-        .padding(.horizontal, 22)
-        .frame(height: max(model.notchSize.height, 30))
-        .allowsHitTesting(false)
+        .frame(width: 128)
+        .padding(.leading, 12)
+        .padding(.trailing, 8)
     }
 }
 
