@@ -23,7 +23,9 @@ struct IslandRootView: View {
             bodyWidth: size.width,
             bodyTop: expanded ? notch.height : 0,
             topRadius: expanded ? 18 : 0,
-            bottomRadius: expanded ? 26 : 10
+            bottomRadius: expanded ? 26 : 10,
+            leftFill: model.topLeftFree ? 1 : 0,
+            rightFill: model.topRightFree ? 1 : 0
         )
 
         ZStack(alignment: .top) {
@@ -57,16 +59,23 @@ struct IslandShape: Shape {
     var bodyTop: CGFloat
     var topRadius: CGFloat
     var bottomRadius: CGFloat
+    /// 1 — полоса меню-бара с этой стороны свободна, островок закрывает её до верха.
+    var leftFill: CGFloat = 0
+    var rightFill: CGFloat = 0
 
-    var animatableData: AnimatablePair<AnimatablePair<CGFloat, CGFloat>,
+    var animatableData: AnimatablePair<AnimatablePair<AnimatablePair<CGFloat, CGFloat>, AnimatablePair<CGFloat, CGFloat>>,
                                        AnimatablePair<CGFloat, AnimatablePair<CGFloat, CGFloat>>> {
         get {
-            AnimatablePair(AnimatablePair(neckWidth, bodyWidth),
-                           AnimatablePair(bodyTop, AnimatablePair(topRadius, bottomRadius)))
+            AnimatablePair(
+                AnimatablePair(AnimatablePair(neckWidth, bodyWidth), AnimatablePair(leftFill, rightFill)),
+                AnimatablePair(bodyTop, AnimatablePair(topRadius, bottomRadius))
+            )
         }
         set {
-            neckWidth = newValue.first.first
-            bodyWidth = newValue.first.second
+            neckWidth = newValue.first.first.first
+            bodyWidth = newValue.first.first.second
+            leftFill = newValue.first.second.first
+            rightFill = newValue.first.second.second
             bodyTop = newValue.second.first
             topRadius = newValue.second.second.first
             bottomRadius = newValue.second.second.second
@@ -94,6 +103,19 @@ struct IslandShape: Shape {
             let nw = min(neckWidth, bw)
             path.addRect(CGRect(x: rect.midX - nw / 2, y: rect.minY,
                                 width: nw, height: bodyTop + topRadius + 1))
+        }
+        // «Плечи»: если полоса меню-бара с какой-то стороны свободна,
+        // островок закрывает её до верхнего края (растёт снизу вверх).
+        let shoulder = bodyTop + topRadius + 1
+        if bodyTop > 0.5, leftFill > 0.01 {
+            let h = shoulder * min(leftFill, 1)
+            path.addRect(CGRect(x: body.minX, y: rect.minY + shoulder - h,
+                                width: rect.midX - body.minX, height: h))
+        }
+        if bodyTop > 0.5, rightFill > 0.01 {
+            let h = shoulder * min(rightFill, 1)
+            path.addRect(CGRect(x: rect.midX, y: rect.minY + shoulder - h,
+                                width: body.maxX - rect.midX, height: h))
         }
         return path
     }

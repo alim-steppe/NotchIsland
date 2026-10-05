@@ -332,6 +332,17 @@ final class NotchController {
         shrinkWork?.cancel()
 
         if value {
+            // Смотрим, свободна ли полоса меню-бара по бокам от выреза.
+            if let scr = screen, model.hasNotch {
+                let free = MenuBarSpace.freeSides(screen: scr,
+                                                  islandWidth: IslandModel.expandedSize.width,
+                                                  menuBarHeight: model.notchSize.height)
+                model.topLeftFree = free.left
+                model.topRightFree = free.right
+            } else {
+                model.topLeftFree = false
+                model.topRightFree = false
+            }
             // Сначала окно становится большим, потом островок плавно растёт внутри него.
             applyFrame(expanded: true)
             panel.ignoresMouseEvents = false

@@ -34,6 +34,9 @@ final class IslandModel: ObservableObject {
     }
     @Published var notchSize = CGSize(width: 190, height: 32)
     @Published var hasNotch = true
+    /// Свободна ли полоса меню-бара слева/справа от выреза (тогда островок раскрывается от самого верха).
+    @Published var topLeftFree = false
+    @Published var topRightFree = false
 
     let calendar = CalendarService()
     let music: MusicService

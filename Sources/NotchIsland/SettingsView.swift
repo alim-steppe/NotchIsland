@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import ServiceManagement
 import SwiftUI
 
@@ -7,6 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject var shelf: ScreenshotService
     @State private var launchAtLogin = SMAppService.mainApp.status == .enabled
     @AppStorage(IslandPrefs.hideInFullscreen) private var hideInFullscreen = true
+    @State private var axGranted = MenuBarSpace.hasAccessibility
 
     var body: some View {
         Form {
@@ -83,6 +85,27 @@ struct SettingsView: View {
                         }
                     }
                 Toggle("Прятать островок в полноэкранных приложениях", isOn: $hideInFullscreen)
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Универсальный доступ")
+                        Text(axGranted
+                             ? "Есть: островок раскрывается от самого верха, когда меню приложения не мешает."
+                             : "Нужен, чтобы видеть, где заканчиваются меню приложения. Без него слева островок всегда раскрывается «шейкой».")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    Spacer()
+                    if axGranted {
+                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                    } else {
+                        Button("Разрешить") {
+                            MenuBarSpace.requestAccessibility()
+                        }
+                    }
+                }
+                .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in
+                    axGranted = MenuBarSpace.hasAccessibility
+                }
                 Text("Наведи курсор на вырез экрана, чтобы раскрыть островок.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
