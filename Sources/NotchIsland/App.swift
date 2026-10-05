@@ -24,6 +24,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindow: NSWindow?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        closeOtherInstances()
         model = IslandModel()
         model.openSettings = { [weak self] in self?.openSettings() }
         notch = NotchController(model: model)
@@ -31,6 +32,25 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         lyricsWindow = LyricsWindowController(lyrics: model.lyrics)
         setupStatusItem()
 
+    }
+
+    /// Если Notch Island уже запущен (автозапуск + ручной запуск, объект входа добавлен дважды),
+    /// закрываем старые копии. Иначе два островка рисуются друг поверх друга:
+    /// текст двоится, а меню-бар перекрывает чёрная область.
+    private func closeOtherInstances() {
+        let me = NSRunningApplication.current.processIdentifier
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.alim.notchisland"
+        let others = NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+            .filter { $0.processIdentifier != me }
+        for app in others {
+            if !app.terminate() { app.forceTerminate() }
+        }
+        // Страховка: если копия не закрылась сама за секунду — закрываем принудительно.
+        if !others.isEmpty {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                for app in others where !app.isTerminated { app.forceTerminate() }
+            }
+        }
     }
 
     private func setupStatusItem() {
